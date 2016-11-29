@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
@@ -9,9 +10,14 @@
 #include <arpa/inet.h>
 
 
-const char MESSAGE[] = "Connection is established!!\n";
+char MESSAGE[42] = "Connection is established with number: ";
+char rand_str[2];
+int rand_number = 0;
+
 
 int main(int argc, char *argv[]){
+  srand(time(NULL));
+
   int sv_socket = 0;
   int sv_port = 0;
   int result = 0;
@@ -120,8 +126,16 @@ int main(int argc, char *argv[]){
       exit(1);
     }
 
+
+    rand_number = rand() % 10;
+    snprintf (rand_str, sizeof(rand_str), "%d", rand_number);
+    strcat(MESSAGE, rand_str);
+    strcat(MESSAGE, "\n"); 
     fprintf(stdout, "New connection is established! \n");
-    fprintf(stdout, "Client from: %s\n", inet_ntoa(cl_sockaddr.sin_addr));
+    fprintf(stdout,
+            "Client from: %s - with number: %s\n",
+            inet_ntoa(cl_sockaddr.sin_addr),
+            rand_str);
 
     /*  send data to client using client socket descriptor */
     write(cl_socket, MESSAGE, strlen(MESSAGE));
