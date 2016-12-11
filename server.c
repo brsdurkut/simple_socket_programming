@@ -10,7 +10,7 @@
 #include <arpa/inet.h>
 
 
-char MESSAGE[42] = "Connection is established with number: ";
+const char MESSAGE[] = "Connection is established with number: ";
 char rand_str[2];
 int rand_number = 0;
 
@@ -129,8 +129,10 @@ int main(int argc, char *argv[]){
 
     rand_number = rand() % 10;
     snprintf (rand_str, sizeof(rand_str), "%d", rand_number);
-    strcat(MESSAGE, rand_str);
-    strcat(MESSAGE, "\n"); 
+    char *send_msg = (char*)malloc(42 * sizeof(char));
+    strcat(send_msg, MESSAGE);
+    strcat(send_msg, rand_str);
+    strcat(send_msg, "\n"); 
     fprintf(stdout, "New connection is established! \n");
     fprintf(stdout,
             "Client from: %s - with number: %s\n",
@@ -138,7 +140,7 @@ int main(int argc, char *argv[]){
             rand_str);
 
     /*  send data to client using client socket descriptor */
-    write(cl_socket, MESSAGE, strlen(MESSAGE));
+    write(cl_socket, send_msg, strlen(send_msg));
 
     /*  close client socket when the job is finished with the client  */
     close(cl_socket);
