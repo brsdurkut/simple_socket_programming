@@ -8,6 +8,7 @@
 
 const char MSG[] = "This is the whole data";
 int threads = 0; 
+int count = 0;
 
 int main(int argc, char *argv[]){
   /*
@@ -87,28 +88,30 @@ int main(int argc, char *argv[]){
             printf("client on descriptor #%i disconnected\n", x);
           } else {
             char **pieces;
+
             if ( threads == 0) {
               threads = atoi(buffer);
+              count = threads;
               int size_perpiece = ( strlen(MSG) / threads );
-              printf("threads: %d; size of pieces: %d\n",threads,size_perpiece);
+
               pieces = (char**)malloc(threads*sizeof(char*));
               int i = 0;
               for (i; i < threads; i++) {
-                pieces[i] = (char*)malloc( (threads+1) * sizeof(char));
+                pieces[i] = (char*)malloc( (size_perpiece+1) * sizeof(char));
                 strncpy(pieces[i], MSG+(size_perpiece * i), size_perpiece);
-                printf("%d.piece: %s\n", i, pieces[i]);
               }
+              strcpy(buffer, "OK!");
             } else {
               int id_client = atoi(buffer);
               printf("%d.piece( \"%s\" ) is sending to client #%d\n",
                     id_client,
                     pieces[id_client],
                     id_client);
-              send(x, pieces[id_client], sizeof(pieces[id_client]), 0);
+              strcpy(buffer, pieces[id_client]);
+              count--;
             }
-            buffer[nread] = '\0';
-            printf("%s\n", buffer);
-            send(x, buffer, nread, 0);
+            send(x, buffer, sizeof(buffer), 0);
+            if ( count == 0) { threads = 0; }
           }
         }
       }

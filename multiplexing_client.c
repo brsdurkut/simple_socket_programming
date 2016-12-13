@@ -91,7 +91,7 @@ int parent_func(int children, int port, char *server) {
 
   sleep(1);
   recv(sock, buffer, 25, 0);
-  printf("%s\n", buffer);
+  printf("\"%s\" from server\n", buffer);
   sleep(1);
   close(sock);
   return 0;
